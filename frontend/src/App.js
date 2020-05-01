@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 import axios from 'axios';
+import { connect } from 'react-redux';
+
+import Account from './containers/account';
 
 class App extends Component {
 
@@ -13,20 +16,24 @@ class App extends Component {
 		return true
 	}
 
-	checkBackEnd = () => {
-		axios.get(this.backend_api + 'check/')
-		.then((response) => {
-			console.log(response.data)
-		})
-		.catch((err) => {
-			console.log(err)
-		})
-	}
+	// checkBackEnd = () => {
+	// 	axios.get(this.backend_api + 'check/')
+	// 	.then((response) => {
+	// 		console.log(response.data)
+	// 	})
+	// 	.catch((err) => {
+	// 		console.log(err)
+	// 	})
+	// }
 
 	render() {
 		return (
 			<div className="App">
-				<button onClick={() => this.checkBackEnd()}>Hello, world</button>
+				{
+					this.props.isAuthenticated === false
+					? <Account login={true} message={''} />
+					: <div></div>
+				}
 			</div>
 		);
 	}
@@ -36,4 +43,10 @@ class App extends Component {
 	}
 }
 
-export default App;
+function mapStateToProps(state) {
+	return {
+		isAuthenticated: state.AuthReducer.isAuthenticated
+	}
+}
+
+export default connect(mapStateToProps)(App);
