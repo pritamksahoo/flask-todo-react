@@ -3,6 +3,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import Config from '../utils/config';
 import * as actions from '../store/actions/actions';
+import history from '../utils/history';
 
 class Account extends Component {
     constructor(props) {
@@ -32,6 +33,7 @@ class Account extends Component {
 
             if (status_code === 200) {
                 this.props.login(username)
+                history.replace("/boards/")
             } else {
                 this.setState({
                     message: text

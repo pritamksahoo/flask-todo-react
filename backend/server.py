@@ -17,11 +17,11 @@ boards = {
 			'todo': {
 				'django': {
 					'desc': 'python3 django==2.2.1',
-					'isCompleted': False
+					'is_completed': False
 				},
 				'flask': {
 					'desc': 'python3 flask backend',
-					'isCompleted': True
+					'is_completed': True
 				}
 			}
 		},
@@ -29,11 +29,11 @@ boards = {
 			'todo': {
 				'onboarding': {
 					'desc': 'cloud gcp',
-					'isCompleted': True
+					'is_completed': True
 				},
 				'policy': {
 					'desc': 'cloud gcp ingress egress',
-					'isCompleted': False
+					'is_completed': False
 				}
 			}
 		}
@@ -81,6 +81,7 @@ def logout():
 	data = request.get_json()
 	
 	username = data.get('username')
+	print("Log Out :-", username)
 
 	if account.get(username, None) is not None:
 		account[username]['is_active'] = False
@@ -104,6 +105,24 @@ def get_all_boards():
 
 	else:
 		return jsonify('Boards Retreival Failed!', 400)
+
+@app.route("/get_all_todos/", methods=["POST"])
+def get_all_todos():
+	global account
+	global boards
+
+	data = request.get_json()
+	username = data.get('username')
+	board = data.get('board')
+	# print(account[username])
+
+	if account.get(username, None) is not None and account[username]['is_active'] and boards[username].get(board, None) is not None:
+		all_todos = boards[username][board]["todo"]
+		todos = [ {'name': k, 'desc': all_todos[k]['desc'], 'is_completed': all_todos[k]['is_completed']} for k in all_todos ]
+		return jsonify(todos, 200)
+
+	else:
+		return jsonify('Todos Retreival Failed!', 400)
 
 
 if __name__ == '__main__':

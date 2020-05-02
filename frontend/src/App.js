@@ -1,11 +1,15 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
+import { Route, Router, Switch, Link, Redirect } from 'react-router-dom';
 import * as actions from './store/actions/actions';
-// import Auth from './utils/auth';
-import Routes from './routes/routes';
+import history from './utils/history';
 
 import Account from './containers/account';
+import Boards from './containers/boards';
+import Todos from './containers/todos';
+
+import RootRedirect from './functional/rootRedirect';
 
 class App extends Component {
 
@@ -27,7 +31,8 @@ class App extends Component {
             let response = result.data
             let [text, status_code] = response
             if (status_code === 200) {
-                this.props.logout(username)
+				this.props.logout(username)
+				history.replace("/account/")
             } else {
 				alert(text)
             }
@@ -35,19 +40,56 @@ class App extends Component {
         .catch((err) => {
 
         })
-    }
+	}
+	
+	PrivateRoute = (pathTo, componentToRender) => {
+        return (
+            this.props.isAuthenticated === true 
+            ? <Route exact path={pathTo} render={() => componentToRender} />
+            : <Route exact path={pathTo} render={() => <Account login={true} message={''} />} />
+        )
+	}
+
+	PrivateNoPropRoute = (pathTo, componentToRender) => {
+        return (
+            this.props.isAuthenticated === true 
+            ? <Route exact path={pathTo} component={componentToRender} />
+            : <Route exact path={pathTo} render={() => <Account login={true} message={''} />} />
+        )
+	}
+	
+	AuthRoute = (pathTo, componentToRender) => {
+		// console.log("auth")
+		return (
+			this.props.isAuthenticated === false
+			? <Route exact path={pathTo} render={() => componentToRender} />
+			: <Route exact path="/boards" render={() => <Boards message={''} />} />
+		)
+	}
 
 	render() {
 		return (
 			<div className="App">
-				{
-					this.props.isAuthenticated === false
-					? <Account login={true} message={''} />
-					: <div>
-						<button onClick={() => this.handleLogOut(this.props.username)}>Log Out</button><hr></hr>
-						<Routes />
+				<Router history={history}>
+					<div>
+						{
+							this.props.isAuthenticated
+							? <div><button onClick={() => this.handleLogOut(this.props.username)}>Log Out</button></div>
+							: <Link to={{pathname: '/account/'}}>LogIn</Link>
+						}
+						<hr></hr><br></br>
+						<Switch>
+
+							<Route exact path="/" render={() => <RootRedirect {...this.props} />} />
+							
+							{this.AuthRoute("/account/", <Account login={true} message={''} />)}
+
+							{this.PrivateRoute("/boards/", <Boards message={''} />)}
+
+							{this.PrivateNoPropRoute("/boards/:todo", Todos)}
+						</Switch>
 					</div>
-				}
+				</Router>
 			</div>
 		);
 	}

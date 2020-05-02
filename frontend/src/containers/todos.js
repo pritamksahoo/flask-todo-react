@@ -6,24 +6,25 @@ import history from '../utils/history';
 import { Link } from 'react-router-dom';
 // import * as actions from '../store/actions/actions';
 
-class Boards extends Component {
+class Todos extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
             // isLogIn: props.login,
-            message: props.message
+            message: props.message,
         }
 
         this.backend_api = 'http://0.0.0.0:8000/'
     }
 
-    getBoards = (username) => {
-
+    getTodos = (username) => {
+        // this.board = board
         if (this.props.isAuthenticated) {
 
-            axios.post(this.backend_api + 'get_all_boards/', {
+            axios.post(this.backend_api + 'get_all_todos/', {
                 username: username,
+                board: this.props.match.params.todo
             }, Config)
             .then((result) => {
                 let response = result.data
@@ -33,8 +34,8 @@ class Boards extends Component {
                 if (status_code === 200) {
                     // console.log(text)
                     this.setState({
-                        boards: text,
-                        message: ''
+                        todos: text,
+                        message: '',
                     })
                 } else {
                     this.setState({
@@ -59,12 +60,52 @@ class Boards extends Component {
         color: 'brown'
     }
 
-    showBoards = () => {
+    descStyle = {
+        fontFamily: 'Arial',
+        fontSize: '12px',
+        color: 'rgb(100,84,85)'
+    }
+
+    showTodos = () => {
+        let all_todos = this.state.todos.filter((item) => {
+            if (!item.is_completed) {
+                return true 
+            }
+        })
+
         return (
-            this.state.boards.map((item, pos) => {
+            all_todos.map((item, pos) => {
                 return (
                     <div key={pos} style={this.style}>
-                        <Link to={{pathname: '/boards/' + item}}>{item}</Link>
+                        <b>{item.name}</b> 
+                        <hr></hr> 
+                        <span style={this.descStyle}>
+                            <b>Description : </b>
+                            {item.desc}
+                        </span>
+                    </div>
+                )
+            })
+        )
+    }
+
+    showDones = () => {
+        let all_todos = this.state.todos.filter((item) => {
+            if (item.is_completed) {
+                return true 
+            }
+        })
+        
+        return (
+            all_todos.map((item, pos) => {
+                return (
+                    <div key={pos} style={this.style}>
+                        <b>{item.name}</b> 
+                        <hr></hr> 
+                        <span style={this.descStyle}>
+                            <b>Description : </b>
+                            {item.desc}
+                        </span>
                     </div>
                 )
             })
@@ -78,12 +119,12 @@ class Boards extends Component {
     render() {
         return (
             <div>
-                <h3>BOARDS</h3>
+                <h3><Link to="/boards/">BOARDS</Link> >> {this.props.match.params.todo}</h3>
                 {/* {this.allBoards} */}
                 {this.props.message}<br></br>
                 {
-                    this.state.boards 
-                    ? this.showBoards()
+                    this.state.todos 
+                    ? <div><h4>TO DO</h4>{this.showTodos()}<h4>DONE</h4>{this.showDones()}</div>
                     : null
                 }
             </div>
@@ -91,7 +132,7 @@ class Boards extends Component {
     }
 
     componentDidMount() {
-        this.getBoards(this.props.username)
+        this.getTodos(this.props.username)
     }
 }
 
@@ -102,4 +143,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps)(Boards);
+export default connect(mapStateToProps)(Todos);

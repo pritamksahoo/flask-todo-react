@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Router, Switch } from 'react-router';
+import { Route, Router, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actions from '../store/actions/actions';
 import history from '../utils/history';
@@ -13,13 +13,9 @@ class Routes extends Component {
         this.state = {
             
         }
-
-        if (this.props.isAuthenticated === false) {
-            history.replace("/")
-        } else {
-            history.replace("/boards")
-        }
     }
+
+    
 
     render() {
         return (
