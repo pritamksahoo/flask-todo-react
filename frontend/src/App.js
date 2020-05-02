@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
+import * as actions from './store/actions/actions';
+// import Auth from './utils/auth';
+import Routes from './routes/routes';
 
 import Account from './containers/account';
 
@@ -16,15 +19,23 @@ class App extends Component {
 		return true
 	}
 
-	// checkBackEnd = () => {
-	// 	axios.get(this.backend_api + 'check/')
-	// 	.then((response) => {
-	// 		console.log(response.data)
-	// 	})
-	// 	.catch((err) => {
-	// 		console.log(err)
-	// 	})
-	// }
+	handleLogOut = (username) => {
+        axios.post(this.backend_api + 'logout/', {
+            username: username
+        })
+        .then((result) => {
+            let response = result.data
+            let [text, status_code] = response
+            if (status_code === 200) {
+                this.props.logout(username)
+            } else {
+				alert(text)
+            }
+        })
+        .catch((err) => {
+
+        })
+    }
 
 	render() {
 		return (
@@ -32,7 +43,10 @@ class App extends Component {
 				{
 					this.props.isAuthenticated === false
 					? <Account login={true} message={''} />
-					: <div></div>
+					: <div>
+						<button onClick={() => this.handleLogOut(this.props.username)}>Log Out</button><hr></hr>
+						<Routes />
+					</div>
 				}
 			</div>
 		);
@@ -45,8 +59,17 @@ class App extends Component {
 
 function mapStateToProps(state) {
 	return {
-		isAuthenticated: state.AuthReducer.isAuthenticated
+		isAuthenticated: state.AuthReducer.isAuthenticated,
+		username: state.AuthReducer.user
 	}
 }
 
-export default connect(mapStateToProps)(App);
+function mapDispatchToProps(dispatch) {
+	return {
+		logout: (username) => {
+			dispatch(actions.logout(username))
+		}
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

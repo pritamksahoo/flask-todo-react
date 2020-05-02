@@ -31,7 +31,7 @@ class Account extends Component {
             let [text, status_code] = response
 
             if (status_code === 200) {
-                this.props.login()
+                this.props.login(username)
             } else {
                 this.setState({
                     message: text
@@ -122,7 +122,7 @@ class Account extends Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        login: () => dispatch(actions.login())
+        login: (username) => dispatch(actions.login(username))
     }
 }
 
