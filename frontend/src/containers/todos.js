@@ -67,6 +67,7 @@ class Todos extends Component {
 
     gridList = {
         display: 'grid',
+        width: '100%',
         gridTemplateColumns: 'auto auto',
         gridGap: '5em',
         marginTop: 0
@@ -112,6 +113,17 @@ class Todos extends Component {
         zIndex: '1000',
         border: '2px solid burlywood',
         borderRadius: '5px'
+    }
+
+    delButton = {
+        padding: '5px 5px',
+        backgroundColor: 'red',
+        color: 'white',
+        outline: 'none',
+        cursor: 'pointer',
+        border: '1px solid red',
+        borderRadius: '3px',
+        zIndex: '1'
     }
 
     completeTask = (taskName) => {
@@ -208,8 +220,38 @@ class Todos extends Component {
 
             })
         }
+    }
 
+    deleteTodo = (taskName) => {
+        axios.post(this.backend_api + 'delete_todo/', {
+            username: this.props.username,
+            board: this.props.match.params.todo,
+            todo: taskName,
+        }, Config)
+        .then((result) => {
+            let response = result.data
+            console.log(response)
+            let [text, status_code] = response
 
+            if (status_code === 200) {
+                // console.log(text)
+                this.setState({
+                    todos: text,
+                    message: '',
+                })
+            } else if (status_code == 404) {
+                this.setState({
+                    message: text
+                })
+            } else {
+                this.setState({
+                    message: text
+                })
+            }
+        })
+        .catch((err) => {
+
+        })
     }
 
     createNewTodoForm = () => {
@@ -230,7 +272,7 @@ class Todos extends Component {
             <div style={this.newCreateForm}>
                 <form onSubmit={this.createNewTodo}>
                     TODO : <input type="text" name="newTodo" id="newTodo"/>
-                    <br></br>
+                    <br></br><br></br>
                     Description: <input type="text" name="description" id="description"/>
                     <br></br><br></br>
                     <button type="submit">Create</button>&nbsp;&nbsp;
@@ -246,6 +288,9 @@ class Todos extends Component {
                 return (
                     <div key={pos} style={this.style}>
                         <span style={this.doneFlag}>
+                            <button style={this.delButton} onClick={() => this.deleteTodo(item.name)}>
+                                Del
+                            </button>&nbsp;
                             {
                                 !isCompleted
                                 ? <button style={this.changeFlagButton} onClick={() => this.completeTask(item.name)}>Complete Task</button>

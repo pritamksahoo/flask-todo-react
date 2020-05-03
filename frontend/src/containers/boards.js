@@ -120,7 +120,7 @@ class Boards extends Component {
                     boards: text,
                     message: '',
                 })
-            } else if (status_code == 404) {
+            } else if (status_code === 404) {
                 this.setState({
                     message: text
                 })

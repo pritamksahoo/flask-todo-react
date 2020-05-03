@@ -150,6 +150,29 @@ def create_new_board():
 	else:
 		return jsonify('Board creation failed!', 400)
 
+@app.route("/delete_board/", methods=["POST"])
+def delete_board():
+	global account
+	global boards
+
+	data = request.get_json()
+	username = data.get('username')
+	board = data.get('board')
+
+	if account.get(username, None) is not None and account[username]['is_active']:
+		if boards[username].get(board, None) is not None:
+			boards[username].pop(board)
+
+			all_boards = list(boards[username].keys())
+
+			return jsonify(all_boards, 200)
+
+		else:
+			return jsonify('Board deletion failed! No such board exists', 404)
+
+	else:
+		return jsonify('Board deletion failed!', 400)
+
 @app.route("/create_new_todo/", methods=["POST"])
 def create_new_todo():
 	global account
@@ -178,6 +201,31 @@ def create_new_todo():
 
 	else:
 		return jsonify('Task creation failed!', 400)
+
+@app.route("/delete_todo/", methods=["POST"])
+def delete_todo():
+	global account
+	global boards
+
+	data = request.get_json()
+	username = data.get('username')
+	board = data.get('board')
+	todo = data.get('todo')
+
+	if account.get(username, None) is not None and account[username]['is_active'] and boards[username].get(board, None) is not None:
+		if boards[username][board]["todo"].get(todo, None) is not None:
+			boards[username][board]["todo"].pop(todo)
+
+			all_todos = boards[username][board]["todo"]
+			todos = [ {'name': k, 'desc': all_todos[k]['desc'], 'is_completed': all_todos[k]['is_completed']} for k in all_todos ]
+
+			return jsonify(todos, 200)
+
+		else:
+			return jsonify('Task deletion failed! No such task exists', 404)
+
+	else:
+		return jsonify('Task deletion failed!', 400)
 
 @app.route("/complete_task/", methods=["POST"])
 def complete_task():
