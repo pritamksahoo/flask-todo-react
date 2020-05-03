@@ -17,11 +17,27 @@ class Account extends Component {
         this.backend_api = 'http://0.0.0.0:8000/'
     }
 
+    validateFormInput = (...args) => {
+        for (let i=0; i<args.length; i++) {
+            let item = args[i]
+
+            if (item === '' || item === ' ' || item === undefined) {
+                return false
+            }
+        }
+
+        return true
+    }
+
     handleLogIn = (event) => {
         event.preventDefault()
 
         let username = event.target.username.value
         let password = event.target.password.value
+
+        if (!this.validateFormInput(username, password)) {
+            return false
+        }
 
         axios.post(this.backend_api + 'login/', {
             username: username,
@@ -50,6 +66,10 @@ class Account extends Component {
 
         let username = event.target.username.value
         let password = event.target.password.value
+
+        if (!this.validateFormInput(username, password)) {
+            return false
+        }
 
         axios.post(this.backend_api + 'signup/', {
             username: username,
@@ -86,8 +106,8 @@ class Account extends Component {
         return (
             <div>
                 <form onSubmit={this.handleLogIn}>
-                    Username : <input type="text" name="username" id="username"/><br></br>
-                    Password : <input type="password" name="password" id="password"/><br></br><br></br>
+                    Username : <input type="text" name="username" id="username" required /><br></br>
+                    Password : <input type="password" name="password" id="password" required /><br></br><br></br>
                     <button type="submit">Login</button>
                     &nbsp;&nbsp; <a href="#" onClick={this.toogleAction}>SignUp</a>
                 </form>
@@ -99,8 +119,8 @@ class Account extends Component {
         return (
             <div>
                 <form onSubmit={this.handleSignUp}>
-                    Username : <input type="text" name="username" id="username"/><br></br>
-                    Password : <input type="password" name="password" id="password"/><br></br><br></br>
+                    Username : <input type="text" name="username" id="username" required /><br></br>
+                    Password : <input type="password" name="password" id="password" required /><br></br><br></br>
                     <button type="submit">Signup</button>
                     &nbsp;&nbsp; <a href="#" onClick={this.toogleAction}>Login</a>
                 </form>

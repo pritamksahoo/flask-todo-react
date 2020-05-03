@@ -122,7 +122,112 @@ def get_all_todos():
 		return jsonify(todos, 200)
 
 	else:
-		return jsonify('Todos Retreival Failed!', 400)
+		return jsonify('Todos Retreival Failed! No such board exists. Create One', 400)
+
+@app.route("/create_new_board/", methods=["POST"])
+def create_new_board():
+	global account
+	global boards
+
+	data = request.get_json()
+	username = data.get('username')
+	board = data.get('board')
+
+	if account.get(username, None) is not None and account[username]['is_active']:
+		if boards[username].get(board, None) is None:
+			boards[username][board] = {
+				"todo": {
+
+				}
+			}
+			all_boards = list(boards[username].keys())
+
+			return jsonify(all_boards, 200)
+
+		else:
+			return jsonify('Board creation failed! Board already exists', 404)
+
+	else:
+		return jsonify('Board creation failed!', 400)
+
+@app.route("/create_new_todo/", methods=["POST"])
+def create_new_todo():
+	global account
+	global boards
+
+	data = request.get_json()
+	username = data.get('username')
+	board = data.get('board')
+	todo = data.get('todo')
+	description = data.get('description')
+
+	if account.get(username, None) is not None and account[username]['is_active'] and boards[username].get(board, None) is not None:
+		if boards[username][board]["todo"].get(todo, None) is None:
+			boards[username][board]["todo"][todo] = {
+				'desc': description,
+				'is_completed': False
+			}
+
+			all_todos = boards[username][board]["todo"]
+			todos = [ {'name': k, 'desc': all_todos[k]['desc'], 'is_completed': all_todos[k]['is_completed']} for k in all_todos ]
+
+			return jsonify(todos, 200)
+
+		else:
+			return jsonify('Task creation failed! It already exists', 404)
+
+	else:
+		return jsonify('Task creation failed!', 400)
+
+@app.route("/complete_task/", methods=["POST"])
+def complete_task():
+	global account
+	global boards
+
+	data = request.get_json()
+	username = data.get('username')
+	board = data.get('board')
+	task = data.get('task')
+
+	if account.get(username, None) is not None and account[username]['is_active']:
+		if boards[username].get(board, None) is not None and boards[username][board]["todo"].get(task, None) is not None:
+			boards[username][board]["todo"][task]["is_completed"] = True
+
+			all_todos = boards[username][board]["todo"]
+			todos = [ {'name': k, 'desc': all_todos[k]['desc'], 'is_completed': all_todos[k]['is_completed']} for k in all_todos ]
+
+			return jsonify(todos, 200)
+
+		else:
+			return jsonify('Task completeion failed! No such task exists', 404)
+
+	else:
+		return jsonify('Task completion failed!', 400)
+
+@app.route("/incomplete_task/", methods=["POST"])
+def incomplete_task():
+	global account
+	global boards
+
+	data = request.get_json()
+	username = data.get('username')
+	board = data.get('board')
+	task = data.get('task')
+
+	if account.get(username, None) is not None and account[username]['is_active']:
+		if boards[username].get(board, None) is not None and boards[username][board]["todo"].get(task, None) is not None:
+			boards[username][board]["todo"][task]["is_completed"] = False
+
+			all_todos = boards[username][board]["todo"]
+			todos = [ {'name': k, 'desc': all_todos[k]['desc'], 'is_completed': all_todos[k]['is_completed']} for k in all_todos ]
+
+			return jsonify(todos, 200)
+
+		else:
+			return jsonify('Operation failed! No such task exists', 404)
+
+	else:
+		return jsonify('Operation failed!', 400)
 
 
 if __name__ == '__main__':
