@@ -67,7 +67,7 @@ class Todos extends Component {
 
     gridList = {
         display: 'grid',
-        width: '100%',
+        // width: '100%',
         gridTemplateColumns: 'auto auto',
         gridGap: '5em',
         marginTop: 0

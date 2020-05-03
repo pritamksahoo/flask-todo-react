@@ -9,7 +9,10 @@ import Account from './containers/account';
 import Boards from './containers/boards';
 import Todos from './containers/todos';
 
+import Header from './functional/header';
 import RootRedirect from './functional/rootRedirect';
+
+import './css/app.css';
 
 class App extends Component {
 
@@ -72,12 +75,17 @@ class App extends Component {
 			<div className="App">
 				<Router history={history}>
 					<div>
-						{
-							this.props.isAuthenticated
-							? <div><button onClick={() => this.handleLogOut(this.props.username)}>Log Out</button></div>
-							: <Link to={{pathname: '/account/'}}>LogIn</Link>
-						}
-						<hr></hr><br></br>
+						<header className="common-header">
+							<div className="logo">
+								TODO
+							</div>
+							{
+								this.props.isAuthenticated
+								? <Header logout={() => this.handleLogOut(this.props.username)} username={this.props.username} />
+								: <Link to={{pathname: '/account/'}}>LogIn</Link>
+							}
+						</header>
+						
 						<Switch>
 
 							<Route exact path="/" render={() => <RootRedirect {...this.props} />} />

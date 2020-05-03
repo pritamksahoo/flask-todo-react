@@ -1,0 +1,19 @@
+.common-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(43, 7, 29);
+    margin: 0;
+    padding: 1em 0;
+}
+
+.logo {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    margin-left: 0.6em;
+}

@@ -106,7 +106,7 @@ class Account extends Component {
         return (
             <div>
                 <form onSubmit={this.handleLogIn}>
-                    Username : <input type="text" name="username" id="username" required /><br></br>
+                    Username : <input type="text" name="username" id="username" required /><br></br><br></br>
                     Password : <input type="password" name="password" id="password" required /><br></br><br></br>
                     <button type="submit">Login</button>
                     &nbsp;&nbsp; <a href="#" onClick={this.toogleAction}>SignUp</a>
@@ -119,7 +119,7 @@ class Account extends Component {
         return (
             <div>
                 <form onSubmit={this.handleSignUp}>
-                    Username : <input type="text" name="username" id="username" required /><br></br>
+                    Username : <input type="text" name="username" id="username" required /><br></br><br></br>
                     Password : <input type="password" name="password" id="password" required /><br></br><br></br>
                     <button type="submit">Signup</button>
                     &nbsp;&nbsp; <a href="#" onClick={this.toogleAction}>Login</a>

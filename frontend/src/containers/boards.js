@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import Config from '../utils/config';
 import history from '../utils/history';
 import { Link } from 'react-router-dom';
+
+import '../css/boards.css';
 // import * as actions from '../store/actions/actions';
 
 class Boards extends Component {
@@ -57,7 +59,8 @@ class Boards extends Component {
         padding: '1em 1em 2em 1em',
         margin: '0 0 1em 0',
         backgroundColor: 'wheat',
-        color: 'brown'
+        color: 'brown',
+        // zIndex: '5'
     }
 
     newSpanStyle = {
@@ -82,7 +85,7 @@ class Boards extends Component {
         position: 'relative',
         top: '3em',
         left: '9em',
-        zIndex: '2',
+        // zIndex: '-1',
         border: '2px solid burlywood',
         borderRadius: '5px'
     }
@@ -101,7 +104,7 @@ class Boards extends Component {
         cursor: 'pointer',
         border: '1px solid red',
         borderRadius: '3px',
-        zIndex: '1'
+        // zIndex: '1'
     }
 
     deleteBoard = (boardName) => {
@@ -189,14 +192,17 @@ class Boards extends Component {
 
     newBoardForm = () => {
         return (
-            <div style={this.newCreateForm}>
-                <form onSubmit={this.createNewBoard}>
-                    Board Name : <input type="text" name="newBoard" id="newBoard"/><br></br><br></br>
+            <form onSubmit={this.createNewBoard}>
+                <h4 className="form-header">CREATE NEW BOARD</h4><hr className="my-hr"></hr>
 
-                    <button type="submit">Create</button>&nbsp;&nbsp;
-                    <button onClick={() => this.hideNewBoardForm()}>Dismiss</button>
-                </form>
-            </div>
+                <label>Board Name</label>
+                <br></br>
+                
+                <input type="text" name="newBoard" placeholder="Enter new board name" id="newBoard"/>
+                <br></br>
+
+                <button type="submit">Create</button>
+            </form>
         )
     }
 
@@ -204,12 +210,7 @@ class Boards extends Component {
         return (
             this.state.boards.map((item, pos) => {
                 return (
-                    <div key={pos} style={this.style}>
-                        <Link to={{pathname: '/boards/' + item}}>{item}</Link>
-                        <span style={this.actionSpan}>
-                            <button style={this.delButton} onClick={() => this.deleteBoard(item)}>Del</button>
-                        </span>
-                    </div>
+                    <BoardItem item={item} pos={pos} deleteBoard={() => this.deleteBoard(item)} />
                 )
             })
         )
@@ -221,26 +222,28 @@ class Boards extends Component {
 
     render() {
         return (
-            <div>
-                <span style={this.newSpanStyle}>
-                    <button style={this.newButtonStyle} onClick={() => this.createNewBoardForm()}> + &nbsp;Create New Board</button>
-                </span>
-
-                {
-                    this.state.displayNewBoardForm 
-                    ? this.newBoardForm()
-                    : null
-                }
-
-                <h3>BOARDS</h3>
+            <div className="main-board">
+                <div className="topbar">
+                    <div className="menu">
+                        <span className="navigate inactive">BOARDS</span>
+                    </div>
+                </div>
                 
-                <p>{this.state.message}</p><br></br>
+                <p className="message">{this.state.message}</p><br></br>
+                
+                <div className="content">
+                    <div className="boards">
+                        {
+                            this.state.boards 
+                            ? this.showBoards()
+                            : null
+                        }
+                    </div>
 
-                {
-                    this.state.boards 
-                    ? this.showBoards()
-                    : null
-                }
+                    <div className="createForm">
+                        {this.newBoardForm()}
+                    </div>
+                </div>
             </div>
         )
     }
@@ -254,6 +257,34 @@ function mapStateToProps(state) {
     return {
         username: state.AuthReducer.user,
         'isAuthenticated': state.AuthReducer.isAuthenticated
+    }
+}
+
+class BoardItem extends Component {
+
+    componentDidMount() {
+        // document.addEventListener("click", this.closeMenu);
+    }
+
+    componentWillUnmount() {
+        // let timeout = 2
+    }
+
+    render () {
+        return (
+            <div key={this.props.pos} className="board-item">
+                <div onClick={() => {history.replace("/boards/" + this.props.item)}}>
+                    <Link className="board-link" to={{pathname: '/boards/' + this.props.item}}>
+                        {this.props.item}
+                    </Link>
+                    
+                </div>
+
+                <div className="action-span">
+                    <button className="del-button" onClick={this.props.deleteBoard}>Del</button>
+                </div>
+            </div>
+        )
     }
 }
 
