@@ -1,5 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from utils import *
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -17,25 +19,31 @@ boards = {
 			'todo': {
 				'django': {
 					'desc': 'python3 django==2.2.1',
+					'last_modified': 1588556528.45781,
 					'is_completed': False
 				},
 				'flask': {
 					'desc': 'python3 flask backend',
+					'last_modified': 1588556579.2773438,
 					'is_completed': True
 				}
-			}
+			},
+			'created_at': 1588556421.1552515
 		},
 		'jarviss': {
 			'todo': {
 				'onboarding': {
 					'desc': 'cloud gcp',
+					'last_modified': 1588556549.8420935,
 					'is_completed': True
 				},
 				'policy': {
 					'desc': 'cloud gcp ingress egress',
+					'last_modified': 1588556590.911627,
 					'is_completed': False
 				}
-			}
+			},
+			'created_at': 1588556466.8548198
 		}
 	}
 }
@@ -100,8 +108,7 @@ def get_all_boards():
 	# print(account[username])
 
 	if account.get(username, None) is not None and account[username]['is_active']:
-		all_boards = list(boards[username].keys())
-		return jsonify(all_boards, 200)
+		return jsonify(fetch_all_boards(boards, username), 200)
 
 	else:
 		return jsonify('Boards Retreival Failed!', 400)
@@ -117,9 +124,7 @@ def get_all_todos():
 	# print(account[username])
 
 	if account.get(username, None) is not None and account[username]['is_active'] and boards[username].get(board, None) is not None:
-		all_todos = boards[username][board]["todo"]
-		todos = [ {'name': k, 'desc': all_todos[k]['desc'], 'is_completed': all_todos[k]['is_completed']} for k in all_todos ]
-		return jsonify(todos, 200)
+		return jsonify(fetch_all_todos(boards, username, board), 200)
 
 	else:
 		return jsonify('Todos Retreival Failed! No such board exists. Create One', 400)
@@ -138,11 +143,11 @@ def create_new_board():
 			boards[username][board] = {
 				"todo": {
 
-				}
+				},
+				"created_at": time.time()
 			}
-			all_boards = list(boards[username].keys())
 
-			return jsonify(all_boards, 200)
+			return jsonify(fetch_all_boards(boards, username), 200)
 
 		else:
 			return jsonify('Board creation failed! Board already exists', 404)
@@ -163,9 +168,7 @@ def delete_board():
 		if boards[username].get(board, None) is not None:
 			boards[username].pop(board)
 
-			all_boards = list(boards[username].keys())
-
-			return jsonify(all_boards, 200)
+			return jsonify("Board successfully deleted", 200)
 
 		else:
 			return jsonify('Board deletion failed! No such board exists', 404)
@@ -188,13 +191,11 @@ def create_new_todo():
 		if boards[username][board]["todo"].get(todo, None) is None:
 			boards[username][board]["todo"][todo] = {
 				'desc': description,
+				'last_modified': time.time(),
 				'is_completed': False
 			}
 
-			all_todos = boards[username][board]["todo"]
-			todos = [ {'name': k, 'desc': all_todos[k]['desc'], 'is_completed': all_todos[k]['is_completed']} for k in all_todos ]
-
-			return jsonify(todos, 200)
+			return jsonify(fetch_all_todos(boards, username, board), 200)
 
 		else:
 			return jsonify('Task creation failed! It already exists', 404)
@@ -240,11 +241,9 @@ def complete_task():
 	if account.get(username, None) is not None and account[username]['is_active']:
 		if boards[username].get(board, None) is not None and boards[username][board]["todo"].get(task, None) is not None:
 			boards[username][board]["todo"][task]["is_completed"] = True
+			boards[username][board]["todo"][task]["last_modified"] = time.time()
 
-			all_todos = boards[username][board]["todo"]
-			todos = [ {'name': k, 'desc': all_todos[k]['desc'], 'is_completed': all_todos[k]['is_completed']} for k in all_todos ]
-
-			return jsonify(todos, 200)
+			return jsonify(fetch_all_todos(boards, username, board), 200)
 
 		else:
 			return jsonify('Task completeion failed! No such task exists', 404)
@@ -265,11 +264,9 @@ def incomplete_task():
 	if account.get(username, None) is not None and account[username]['is_active']:
 		if boards[username].get(board, None) is not None and boards[username][board]["todo"].get(task, None) is not None:
 			boards[username][board]["todo"][task]["is_completed"] = False
+			boards[username][board]["todo"][task]["last_modified"] = time.time()
 
-			all_todos = boards[username][board]["todo"]
-			todos = [ {'name': k, 'desc': all_todos[k]['desc'], 'is_completed': all_todos[k]['is_completed']} for k in all_todos ]
-
-			return jsonify(todos, 200)
+			return jsonify(fetch_all_todos(boards, username, board), 200)
 
 		else:
 			return jsonify('Operation failed! No such task exists', 404)

@@ -53,61 +53,7 @@ class Boards extends Component {
         }
     }
 
-    style = {
-        position: 'relative',
-        cursor: 'pointer',
-        padding: '1em 1em 2em 1em',
-        margin: '0 0 1em 0',
-        backgroundColor: 'wheat',
-        color: 'brown',
-        // zIndex: '5'
-    }
-
-    newSpanStyle = {
-        float: 'right',
-    }
-
-    newButtonStyle = {
-        padding: '10px 15px',
-        backgroundColor: 'green',
-        color: 'white',
-        outline: 'none',
-        cursor: 'pointer',
-        border: '1px solid green',
-        borderRadius: '5px',
-        fontSize: '14px'
-    }
-
-    newCreateForm = {
-        backgroundColor: 'white',
-        padding: '1em',
-        float: 'right',
-        position: 'relative',
-        top: '3em',
-        left: '9em',
-        // zIndex: '-1',
-        border: '2px solid burlywood',
-        borderRadius: '5px'
-    }
-
-    actionSpan = {
-        position: 'absolute',
-        right: '1em',
-        marginBottom: '1em'
-    }
-
-    delButton = {
-        padding: '5px 5px',
-        backgroundColor: 'red',
-        color: 'white',
-        outline: 'none',
-        cursor: 'pointer',
-        border: '1px solid red',
-        borderRadius: '3px',
-        // zIndex: '1'
-    }
-
-    deleteBoard = (boardName) => {
+    deleteBoard = (boardName, pos) => {
         axios.post(this.backend_api + 'delete_board/', {
             username: this.props.username,
             board: boardName
@@ -120,8 +66,11 @@ class Boards extends Component {
             if (status_code === 200) {
                 // console.log(text)
                 this.setState({
-                    boards: text,
+                    // boards: text,
                     message: '',
+                    boardDidDelete: true,
+                    boardDidCreate: false,
+                    intendedBoardIndex: pos
                 })
             } else if (status_code === 404) {
                 this.setState({
@@ -154,10 +103,13 @@ class Boards extends Component {
 
                 if (status_code === 200) {
                     // console.log(text)
+
                     this.setState({
                         boards: text,
                         message: '',
-                        displayNewBoardForm: false
+                        boardDidCreate: true,
+                        boardDidDelete: false,
+                        intendedBoardIndex: 0
                     })
                 } else if (status_code == 404) {
                     this.setState({
@@ -206,11 +158,34 @@ class Boards extends Component {
         )
     }
 
+    toBeDeleted = (pos) => {
+        let boards = this.state.boards
+        // boards.pop(pos)
+        // console.log("boards:before", boards)
+        boards = [...boards.slice(0, pos), ...boards.slice(pos+1, boards.length)]
+
+        // console.log("boards:after", boards)
+
+        this.setState({
+            boards: boards,
+            boardDidDelete: false,
+            boardDidCreate: false
+        })
+    }
+
     showBoards = () => {
         return (
             this.state.boards.map((item, pos) => {
                 return (
-                    <BoardItem item={item} pos={pos} deleteBoard={() => this.deleteBoard(item)} />
+                    <BoardItem key={`${pos}_${item[1]}`} item={item} pos={pos} 
+                    
+                    newlyCreated={this.state.boardDidCreate && this.state.intendedBoardIndex === pos ? true : false} 
+                    
+                    newlyDeleted={this.state.boardDidDelete && this.state.intendedBoardIndex === pos ? true : false}  
+
+                    toBeDeleted={() => this.toBeDeleted(pos)}
+                    
+                    deleteBoard={() => this.deleteBoard(item[0], pos)} />
                 )
             })
         )
@@ -270,13 +245,28 @@ class BoardItem extends Component {
         // let timeout = 2
     }
 
+    componentDidUpdate() {
+        // console.log("hello:", this.props.item[0], this.newlyDeleted)
+        setTimeout(() => {
+            if (this.props.newlyDeleted) {
+                this.props.toBeDeleted()
+            }
+        }, 200)
+    }
+
+    // componentWillReceiveProps(newProps) {
+
+    // }
+
     render () {
+        console.log(this.props.newlyCreated)
         return (
-            <div key={this.props.pos} className="board-item">
-                <div onClick={() => {history.replace("/boards/" + this.props.item)}}>
-                    <Link className="board-link" to={{pathname: '/boards/' + this.props.item}}>
-                        {this.props.item}
-                    </Link>
+            <div className={"board-item " + (this.props.newlyCreated ? "new-board " : " " + (this.props.newlyDeleted ? "delete" : ""))}>
+                <div>
+                    <Link className="board-link" to={{pathname: '/boards/' + this.props.item[0]}}>
+                        {this.props.item[0]}
+                    </Link><br></br><br></br>
+                    <small><b>Created At : </b>{this.props.item[1]}</small>
                     
                 </div>
 

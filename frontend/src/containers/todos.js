@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import Config from '../utils/config';
 import history from '../utils/history';
 import { Link } from 'react-router-dom';
+import '../css/todos.css';
+import TodoItem from './todoItem';
 // import * as actions from '../store/actions/actions';
 
 class Todos extends Component {
@@ -52,80 +54,6 @@ class Todos extends Component {
         }
     }
 
-    style = {
-        padding: '1em',
-        margin: '0 0 1em 0',
-        backgroundColor: 'wheat',
-        color: 'brown'
-    }
-
-    descStyle = {
-        fontFamily: 'Arial',
-        fontSize: '12px',
-        color: 'rgb(100,84,85)'
-    }
-
-    gridList = {
-        display: 'grid',
-        // width: '100%',
-        gridTemplateColumns: 'auto auto',
-        gridGap: '5em',
-        marginTop: 0
-    }
-
-    doneFlag = {
-        float: 'right'
-    }
-
-    changeFlagButton =  {
-        cursor: 'pointer',
-        outline: 'none',
-        border: '1px solid wheat',
-        borderRadius: '4px',
-        backgroundColor: 'white',
-        margin: '0 0 1em 0',
-        padding: '6px 10px'
-    }
-
-    newSpanStyle = {
-        float: 'right',
-    }
-
-    newButtonStyle = {
-        padding: '10px 15px',
-        backgroundColor: 'green',
-        color: 'white',
-        outline: 'none',
-        cursor: 'pointer',
-        border: '1px solid green',
-        borderRadius: '5px',
-        fontSize: '13px',
-        zIndex: '1'
-    }
-
-    newCreateForm = {
-        backgroundColor: 'white',
-        padding: '1em',
-        float: 'right',
-        position: 'relative',
-        top: '3em',
-        left: '9em',
-        zIndex: '1000',
-        border: '2px solid burlywood',
-        borderRadius: '5px'
-    }
-
-    delButton = {
-        padding: '5px 5px',
-        backgroundColor: 'red',
-        color: 'white',
-        outline: 'none',
-        cursor: 'pointer',
-        border: '1px solid red',
-        borderRadius: '3px',
-        zIndex: '1'
-    }
-
     completeTask = (taskName) => {
         axios.post(this.backend_api + 'complete_task/', {
             username: this.props.username,
@@ -142,6 +70,8 @@ class Todos extends Component {
                 this.setState({
                     todos: text,
                     message: '',
+                    todoDidCreate: false,
+                    todoDidDelete: false,
                 })
             } else {
                 this.setState({
@@ -170,6 +100,8 @@ class Todos extends Component {
                 this.setState({
                     todos: text,
                     message: '',
+                    todoDidCreate: false,
+                    todoDidDelete: false,
                 })
             } else {
                 this.setState({
@@ -185,7 +117,7 @@ class Todos extends Component {
     createNewTodo = (event) => {
         event.preventDefault()
         let newTodo = event.target.newTodo.value
-        let description = event.target.description.value
+        let description = event.target.newDesc.value
 
         if (newTodo !== undefined && newTodo !== '') {
             axios.post(this.backend_api + 'create_new_todo/', {
@@ -204,7 +136,9 @@ class Todos extends Component {
                     this.setState({
                         todos: text,
                         message: '',
-                        displayNewTodoForm: false
+                        todoDidCreate: true,
+                        todoDidDelete: false,
+                        intendedTodoIndex: 0,
                     })
                 } else if (status_code == 404) {
                     this.setState({
@@ -222,7 +156,7 @@ class Todos extends Component {
         }
     }
 
-    deleteTodo = (taskName) => {
+    deleteTodo = (taskName, pos, isCompleted) => {
         axios.post(this.backend_api + 'delete_todo/', {
             username: this.props.username,
             board: this.props.match.params.todo,
@@ -236,8 +170,12 @@ class Todos extends Component {
             if (status_code === 200) {
                 // console.log(text)
                 this.setState({
-                    todos: text,
+                    // todos: text,
                     message: '',
+                    todoDidDelete: true,
+                    todoDidCreate: false,
+                    intendedTodoIndex: pos,
+                    isCompletedDelete: isCompleted
                 })
             } else if (status_code == 404) {
                 this.setState({
@@ -269,43 +207,72 @@ class Todos extends Component {
 
     newTodoForm = () => {
         return (
-            <div style={this.newCreateForm}>
-                <form onSubmit={this.createNewTodo}>
-                    TODO : <input type="text" name="newTodo" id="newTodo"/>
-                    <br></br><br></br>
-                    Description: <input type="text" name="description" id="description"/>
-                    <br></br><br></br>
-                    <button type="submit">Create</button>&nbsp;&nbsp;
-                    <button onClick={() => this.hideNewTodoForm()}>Dismiss</button>
-                </form>
-            </div>
+            <form onSubmit={this.createNewTodo}>
+                <h4 className="form-header">CREATE NEW TODO</h4><hr className="my-hr"></hr>
+
+                <label>Board Name</label>
+                <br></br>
+                
+                <input type="text" name="newTddo" placeholder="Enter new task name" id="newTodo"/>
+                <br></br><br></br>
+
+                <label>Description</label>
+                <br></br>
+
+                <input type="text" name="newDesc" placeholder="Enter description" id="newDesc"/>
+                <br></br>
+
+                <button type="submit">Create</button>
+            </form>
         )
+    }
+
+    toBeDeleted = (itemName) => {
+        let todos = this.state.todos
+        let pos = 0
+        // boards.pop(pos)
+        // console.log("boards:before", boards)
+
+        for (let i=0; i<todos.length; i++) {
+            if (todos[i] === itemName) {
+                pos = i
+                break
+            }
+        }
+
+        todos = [...todos.slice(0, pos), ...todos.slice(pos+1, todos.length)]
+
+        // console.log("boards:after", boards)
+
+        this.setState({
+            todos: todos,
+            todoDidDelete: false,
+            todoDidCreate: false
+        })
     }
 
     showList = (all_todos, isCompleted=false) => {
         return (
             all_todos.map((item, pos) => {
                 return (
-                    <div key={pos} style={this.style}>
-                        <span style={this.doneFlag}>
-                            <button style={this.delButton} onClick={() => this.deleteTodo(item.name)}>
-                                Del
-                            </button>&nbsp;
-                            {
-                                !isCompleted
-                                ? <button style={this.changeFlagButton} onClick={() => this.completeTask(item.name)}>Complete Task</button>
-                                : <button style={this.changeFlagButton} onClick={() => this.inCompleteTask(item.name)}>Back To TODO</button>
-                            }
-                        </span>
+                    <TodoItem 
+                        key={`pos_${item[2]}`}
 
-                        <b>{item.name}</b>
+                        item={item} pos={pos}
 
-                        <br></br> 
-                        <span style={this.descStyle}>
-                            <b>Description : </b>
-                            {item.desc}
-                        </span>
-                    </div>
+                        deleteTodo={() => this.deleteTodo(item[0], pos, isCompleted)} 
+                    
+                        completeTask={() => this.completeTask(item[0])}
+
+                        inCompleteTask={() => this.inCompleteTask(item[0])}
+
+                        newlyCreated={this.state.todoDidCreate && this.state.intendedTodoIndex === pos && !isCompleted ? true : false} 
+                    
+                        newlyDeleted={this.state.todoDidDelete && this.state.intendedTodoIndex === pos && isCompleted === this.state.isCompletedDelete ? true : false} 
+
+                        toBeDeleted={() => this.toBeDeleted(item[0])}
+                    />
+
                 )
             })
         )
@@ -313,7 +280,7 @@ class Todos extends Component {
 
     showTodos = () => {
         let all_todos = this.state.todos.filter((item) => {
-            if (!item.is_completed) {
+            if (!item[3]) {
                 return true 
             }
         })
@@ -323,7 +290,7 @@ class Todos extends Component {
 
     showDones = () => {
         let all_todos = this.state.todos.filter((item) => {
-            if (item.is_completed) {
+            if (item[3]) {
                 return true 
             }
         })
@@ -337,32 +304,46 @@ class Todos extends Component {
 
     render() {
         return (
-            <div>
+            <div className="main-board">
 
-                <span style={this.newSpanStyle}>
-                    <button style={this.newButtonStyle} onClick={() => this.createNewTodoForm()}> + &nbsp;Create New TODO</button>
-                </span>
-
-                {
-                    this.state.displayNewTodoForm 
-                    ? this.newTodoForm()
-                    : null
-                }
-
-                <h3><Link to="/boards/">BOARDS</Link> >> {this.props.match.params.todo}</h3>
-                {this.state.message}<br></br>
-                {
-                    this.state.todos 
-                    ? <div style={this.gridList}>
-                        <div>
-                            <h4>TO DO</h4>{this.showTodos()}
-                        </div>
-                        <div>
-                            <h4>DONE</h4>{this.showDones()}
-                        </div>
+                <div className="topbar">
+                    <div className="menu">
+                        <span className="navigate active">
+                            <Link className="link" to="/boards/">BOARDS</Link>
+                        </span>
+                        <span className="navigate inactive">&nbsp;&nbsp;|&nbsp;&nbsp;{this.props.match.params.todo}</span>
                     </div>
-                    : null
-                }
+                </div>
+
+                <p className="message">{this.state.message}</p><br></br>
+
+                <div className="content-todo">
+                    <div className="createForm">
+                        {this.newTodoForm()}
+                    </div>
+
+                    <div className="todos">
+                        <h4 className="form-header">TODO</h4>
+                        {
+                            this.state.todos 
+                            ? this.showTodos()
+                            : null
+                        }
+                    </div>
+
+                    <div className="dones">
+                        <h4 className="form-header">DONE</h4>
+                        {
+                            this.state.todos 
+                            ? this.showDones()
+                            : null
+                        }
+                    </div>
+
+                    
+                </div>
+
+
             </div>
         )
     }
