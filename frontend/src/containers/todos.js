@@ -234,7 +234,7 @@ class Todos extends Component {
         // console.log("boards:before", boards)
 
         for (let i=0; i<todos.length; i++) {
-            if (todos[i] === itemName) {
+            if (todos[i][0] === itemName) {
                 pos = i
                 break
             }
