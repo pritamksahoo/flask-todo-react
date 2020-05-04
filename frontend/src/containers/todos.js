@@ -15,6 +15,8 @@ class Todos extends Component {
         this.state = {
             // isLogIn: props.login,
             message: props.message,
+            showTodo: true,
+            showDone: false
         }
 
         this.backend_api = 'http://0.0.0.0:8000/'
@@ -210,7 +212,7 @@ class Todos extends Component {
             <form onSubmit={this.createNewTodo}>
                 <h4 className="form-header">CREATE NEW TODO</h4><hr className="my-hr"></hr>
 
-                <label>Board Name</label>
+                <label>Task Name</label>
                 <br></br>
                 
                 <input type="text" name="newTddo" placeholder="Enter new task name" id="newTodo"/>
@@ -302,6 +304,20 @@ class Todos extends Component {
         return true
     }
 
+    showOnlyTodo = () => {
+        this.setState({
+            showTodo: true,
+            showDone: false,
+        })
+    }
+
+    showOnlyDone = () => {
+        this.setState({
+            showTodo: false,
+            showDone: true
+        })
+    }
+
     render() {
         return (
             <div className="main-board">
@@ -323,21 +339,45 @@ class Todos extends Component {
                     </div>
 
                     <div className="todos">
-                        <h4 className="form-header">TODO</h4>
+                        <h4 className="form-header todo">TODO</h4>
+
                         {
-                            this.state.todos 
+                            this.state.todos  
                             ? this.showTodos()
                             : null
                         }
                     </div>
 
                     <div className="dones">
-                        <h4 className="form-header">DONE</h4>
+                        <h4 className="form-header done">DONE</h4>
                         {
-                            this.state.todos 
+                            this.state.todos
                             ? this.showDones()
                             : null
                         }
+                    </div>
+
+                    <div className="alt-view">
+                        <h4 className="form-header alt-form-header"
+                            ><a className={"header-todo " + (this.state.showTodo ? "active" : "")} onClick={() => this.showOnlyTodo()}>TODO</a>
+
+                            &nbsp; | &nbsp;
+
+                            <a className={"header-done " + (this.state.showDone ? "active" : "")} onClick={() => this.showOnlyDone()}>DONE</a>
+                        </h4>
+
+                        {
+                            this.state.todos && this.state.showTodo  
+                            ? <div className="todos alt-todos">{this.showTodos()}</div>
+                            : null
+                        }
+
+                        {
+                            this.state.todos && this.state.showDone 
+                            ? <div className="dones alt-dones">{this.showDones()}</div>
+                            : null
+                        }
+
                     </div>
 
                     

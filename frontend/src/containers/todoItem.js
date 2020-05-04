@@ -1,9 +1,4 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-import { connect } from 'react-redux';
-import Config from '../utils/config';
-import history from '../utils/history';
-import { Link } from 'react-router-dom';
 import '../css/todos.css';
 
 class TodoItem extends Component {
@@ -20,7 +15,7 @@ class TodoItem extends Component {
         return (
             <div className={"todo-item " + (this.props.newlyCreated ? "new-todo  " : " " + (this.props.newlyDeleted ? "delete " : ""))}>
 
-                <div>
+                <div className="left-span">
                     <details>
                         <summary>{this.props.item[0]}</summary>
                         <br></br>

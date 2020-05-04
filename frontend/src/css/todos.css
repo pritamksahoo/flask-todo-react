@@ -61,6 +61,15 @@
     margin: 0 1.5em;
 }
 
+.alt-form-header {
+    /* display: none; */
+    margin-left: 1.2em;
+}
+
+.alt-view {
+    display: none;
+}
+
 .my-hr {
     margin: 0 0 1em 0;
     padding: 0;
@@ -113,6 +122,7 @@ button[type=submit] {
     max-height: 400px;
     overflow-y: auto;
     overflow-x: hidden;
+    /* width: 0%; */
 }
 
 .todo-item {
@@ -129,9 +139,17 @@ button[type=submit] {
     min-height: 30px;
     /* cursor: pointer; */
     word-wrap: break-word;
+    grid-row-gap: 10px;
     opacity: 0;
     animation: fadeIn 0.3s ease-out;
     opacity: 1;
+}
+
+.left-span {
+    /* word-break: break-word; */
+    word-wrap: break-word;
+    width: 60%;
+    position: relative;
 }
 
 .todo-item.new-todo {
@@ -179,12 +197,16 @@ button[type=submit] {
 summary {
     cursor: pointer;
     outline: none;
+    margin-left: 1.5em;
 }
 
 summary:after {
     background: transparent;
     content: "+";
     float: left;
+    position: absolute;
+    top: 0;
+    left: 0;
     font-weight: bold;
     margin-right: 0.5em;
     /* font-size: 20px; */
@@ -212,4 +234,46 @@ details[open]>summary:after {
 .flag-button:hover {
     background-color: rgb(122, 70, 70);
     color: seashell;
+}
+
+@media (max-width: 1170px) {
+    .content-todo {
+        grid-template-columns: 25% 75%;
+    }
+    .todos {
+        display: none;
+    }
+    .dones {
+        display: none;
+    }
+    .alt-view {
+        display: block;
+        /* margin: 0 1.5em; */
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+    .todos.alt-todos {
+        display: block;
+    }
+    .dones.alt-dones {
+        display: block;
+        margin-left: 1.2em;
+    }
+    .header-todo,
+    .header-done {
+        color: rgb(173, 136, 87);
+    }
+    .header-todo.active,
+    .header-done.active {
+        color: rgb(88, 60, 23);
+    }
+    @media (max-width: 770px) {
+        .content-todo {
+            grid-template-columns: 100%;
+            grid-row-gap: 30px;
+        }
+        .alt-view {
+            margin-left: 1em;
+        }
+    }
 }

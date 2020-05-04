@@ -17,3 +17,10 @@
     font-weight: bold;
     margin-left: 0.6em;
 }
+
+.header-login-link {
+    color: wheat;
+    text-decoration: none;
+    margin-right: 2em;
+    font-size: 14px;
+}

@@ -82,7 +82,7 @@ class App extends Component {
 							{
 								this.props.isAuthenticated
 								? <Header logout={() => this.handleLogOut(this.props.username)} username={this.props.username} />
-								: <Link to={{pathname: '/account/'}}>LogIn</Link>
+								: <Link className="header-login-link" to={{pathname: '/account/'}}>LogIn</Link>
 							}
 						</header>
 						

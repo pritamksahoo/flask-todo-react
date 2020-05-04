@@ -32,7 +32,7 @@
 
 .content {
     display: grid;
-    grid-template-columns: 70% 30%;
+    grid-template-columns: 25% 5% 70%;
 }
 
 .boards {
@@ -45,11 +45,17 @@
 
 .createForm {
     margin: 0 1.5em;
+    padding-left: 5px;
 }
 
 .form-header {
     margin: 0 0 0.5em 0;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.form-header.board-header {
+    /* line-height: 30px; */
+    display: none;
 }
 
 .my-hr {
@@ -65,7 +71,8 @@ label {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
-input[type=text] {
+input[type=text],
+input[type=password] {
     margin-top: 5px;
     font-size: 13px;
     font-family: Arial, Helvetica, sans-serif;
@@ -74,6 +81,7 @@ input[type=text] {
     height: 20px;
     padding: 4px 10px;
     border-radius: 4px;
+    width: 90%;
 }
 
 button[type=submit] {
@@ -164,6 +172,10 @@ button[type=submit]:hover {
     /* margin-bottom: 2em; */
 }
 
+.left-span {
+    word-wrap: break-word;
+}
+
 .action-span {
     display: flex;
     justify-content: flex-end;
@@ -225,4 +237,26 @@ small {
 
  ::-webkit-scrollbar-thumb:hover {
     background: rgb(78, 29, 29);
+}
+
+@media (max-width: 800px) {
+    .content {
+        grid-template-columns: 100%;
+        grid-row-gap: 10px;
+    }
+    body {
+        overflow: auto;
+    }
+    .form-header.board-header {
+        margin-left: 0.3em;
+        display: block;
+        line-height: 2.2;
+    }
+}
+
+@media (max-width: 375px) {
+    .board-item {
+        grid-template-columns: 100%;
+        grid-row-gap: 10px;
+    }
 }

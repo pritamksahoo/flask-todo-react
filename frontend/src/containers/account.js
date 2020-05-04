@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Config from '../utils/config';
 import * as actions from '../store/actions/actions';
 import history from '../utils/history';
+import '../css/account.css';
 
 class Account extends Component {
     constructor(props) {
@@ -104,12 +105,21 @@ class Account extends Component {
 
     loginComponent = () => {
         return (
-            <div>
-                <form onSubmit={this.handleLogIn}>
-                    Username : <input type="text" name="username" id="username" required /><br></br><br></br>
-                    Password : <input type="password" name="password" id="password" required /><br></br><br></br>
-                    <button type="submit">Login</button>
-                    &nbsp;&nbsp; <a href="#" onClick={this.toogleAction}>SignUp</a>
+            <div className="account-div">
+                <form className="account-form" onSubmit={this.handleLogIn}>
+                    <h3 className="form-header">Log Into your account</h3>
+                    <hr className="my-hr"></hr>
+
+                    <p className="message account">{this.state.message}</p>
+
+                    <label>Username</label><br></br>
+                    <input type="text" name="username" placeholder="Enter username" id="username" required /><br></br><br></br>
+
+                    <label>Password</label><br></br>
+                    <input type="password" name="password" placeholder="Type your password" id="password" required /><br></br><br></br>
+                    
+                    <button type="submit">Login</button><br></br>
+                    <p className="another-link">Don't have an account? <a href="#" className="switch-link" onClick={this.toogleAction}>Create one!</a></p>
                 </form>
             </div>
         )
@@ -117,12 +127,21 @@ class Account extends Component {
 
     signupComponent = () => {
         return (
-            <div>
-                <form onSubmit={this.handleSignUp}>
-                    Username : <input type="text" name="username" id="username" required /><br></br><br></br>
-                    Password : <input type="password" name="password" id="password" required /><br></br><br></br>
-                    <button type="submit">Signup</button>
-                    &nbsp;&nbsp; <a href="#" onClick={this.toogleAction}>Login</a>
+            <div className="account-div">
+                <form className="account-form" onSubmit={this.handleSignUp}>
+                <h3 className="form-header">Create your account</h3>
+                    <hr className="my-hr"></hr>
+
+                    <p className="message account">{this.state.message}</p>
+
+                    <label>Username</label><br></br>
+                    <input type="text" name="username" placeholder="Enter username" id="username" required /><br></br><br></br>
+
+                    <label>Password</label><br></br>
+                    <input type="password" name="password" placeholder="Type your password" id="password" required /><br></br><br></br>
+                    
+                    <button type="submit">Sign Up</button><br></br>
+                    <p className="another-link">Already have an account? <a href="#" className="switch-link" onClick={this.toogleAction}>Log In</a></p>
                 </form>
             </div>
         )
@@ -131,7 +150,6 @@ class Account extends Component {
     render() {
         return (
             <div>
-                {this.state.message}
                 {
                     this.state.isLogIn
                     ? <this.loginComponent />

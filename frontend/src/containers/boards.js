@@ -207,17 +207,23 @@ class Boards extends Component {
                 <p className="message">{this.state.message}</p><br></br>
                 
                 <div className="content">
+
+                    <div className="createForm">
+                        {this.newBoardForm()}
+                    </div>
+
+                    <div></div>
+
                     <div className="boards">
+                        <h4 className="form-header board-header">ALL BOARDS<hr className="my-hr"></hr></h4>
+                        
                         {
                             this.state.boards 
                             ? this.showBoards()
                             : null
                         }
                     </div>
-
-                    <div className="createForm">
-                        {this.newBoardForm()}
-                    </div>
+                    
                 </div>
             </div>
         )
@@ -262,7 +268,7 @@ class BoardItem extends Component {
         console.log(this.props.newlyCreated)
         return (
             <div className={"board-item " + (this.props.newlyCreated ? "new-board " : " " + (this.props.newlyDeleted ? "delete" : ""))}>
-                <div>
+                <div className="left-span">
                     <Link className="board-link" to={{pathname: '/boards/' + this.props.item[0]}}>
                         {this.props.item[0]}
                     </Link><br></br><br></br>
