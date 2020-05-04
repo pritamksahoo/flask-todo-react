@@ -262,6 +262,7 @@ details[open]>summary:after {
     .header-todo,
     .header-done {
         color: rgb(173, 136, 87);
+        cursor: pointer;
     }
     .header-todo.active,
     .header-done.active {
