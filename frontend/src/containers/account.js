@@ -15,6 +15,9 @@ class Account extends Component {
             message: props.message
         }
 
+        this.disableLogInBtn = React.createRef()
+        this.disableSignUpBtn = React.createRef()
+
         this.backend_api = 'http://0.0.0.0:8000/'
     }
 
@@ -32,6 +35,8 @@ class Account extends Component {
 
     handleLogIn = (event) => {
         event.preventDefault()
+
+        this.disableLogInBtn.current.setAttribute("disabled", "disabled")
 
         let username = event.target.username.value
         let password = event.target.password.value
@@ -56,14 +61,22 @@ class Account extends Component {
                     message: text
                 })
             }
+
+            this.disableLogInBtn.current.removeAttribute("disabled")
         })
         .catch((err) => {
-
+            if (this.disableLogInBtn.current) {
+                this.disableLogInBtn.current.removeAttribute("disabled")
+            }
         })
+
+
     }
 
     handleSignUp = (event) => {
         event.preventDefault()
+
+        this.disableSignUpBtn.current.setAttribute("disabled", "disabled")
 
         let username = event.target.username.value
         let password = event.target.password.value
@@ -89,9 +102,13 @@ class Account extends Component {
                     message: text
                 })
             }
+
+            this.disableSignUpBtn.current.removeAttribute("disabled")
         })
         .catch((err) => {
-
+            if ( this.disableSignUpBtn.current) {
+                this.disableSignUpBtn.current.removeAttribute("disabled")
+            }
         })
     }
 
@@ -118,7 +135,7 @@ class Account extends Component {
                     <label>Password</label><br></br>
                     <input type="password" name="password" placeholder="Type your password" id="password" required /><br></br><br></br>
                     
-                    <button type="submit">Login</button><br></br>
+                    <button className="login-button" ref={this.disableLogInBtn} type="submit">Login</button><br></br>
                     <p className="another-link">Don't have an account? <a href="#" className="switch-link" onClick={this.toogleAction}>Create one!</a></p>
                 </form>
             </div>
@@ -140,7 +157,7 @@ class Account extends Component {
                     <label>Password</label><br></br>
                     <input type="password" name="password" placeholder="Type your password" id="password" required /><br></br><br></br>
                     
-                    <button type="submit">Sign Up</button><br></br>
+                    <button type="submit" ref={this.disableSignUpBtn}>Sign Up</button><br></br>
                     <p className="another-link">Already have an account? <a href="#" className="switch-link" onClick={this.toogleAction}>Log In</a></p>
                 </form>
             </div>

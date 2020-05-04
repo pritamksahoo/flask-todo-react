@@ -19,6 +19,8 @@ class Todos extends Component {
             showDone: false
         }
 
+        this.createTodoBtn = React.createRef()
+
         this.backend_api = 'http://0.0.0.0:8000/'
     }
 
@@ -118,6 +120,9 @@ class Todos extends Component {
 
     createNewTodo = (event) => {
         event.preventDefault()
+
+        this.createTodoBtn.current.setAttribute("disabled", "disabled")
+
         let newTodo = event.target.newTodo.value
         let description = event.target.newDesc.value
 
@@ -151,9 +156,13 @@ class Todos extends Component {
                         message: text
                     })
                 }
+
+                this.createTodoBtn.current.removeAttribute("disabled")
             })
             .catch((err) => {
-
+                if (this.createTodoBtn.current) {
+                    this.createTodoBtn.current.removeAttribute("disabled")
+                }
             })
         }
     }
@@ -215,16 +224,16 @@ class Todos extends Component {
                 <label>Task Name</label>
                 <br></br>
                 
-                <input type="text" name="newTddo" placeholder="Enter new task name" id="newTodo"/>
+                <input type="text" name="newTddo" placeholder="Enter new task name" id="newTodo" required/>
                 <br></br><br></br>
 
                 <label>Description</label>
                 <br></br>
 
-                <input type="text" name="newDesc" placeholder="Enter description" id="newDesc"/>
+                <input type="text" name="newDesc" placeholder="Enter description" id="newDesc" required/>
                 <br></br>
 
-                <button type="submit">Create</button>
+                <button ref={this.createTodoBtn} type="submit">Create</button>
             </form>
         )
     }

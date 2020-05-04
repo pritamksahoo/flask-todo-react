@@ -276,5 +276,10 @@ details[open]>summary:after {
         .alt-view {
             margin-left: 1em;
         }
+        @media (max-width: 400px) {
+            .todo-item {
+                grid-template-columns: 100%;
+            }
+        }
     }
 }

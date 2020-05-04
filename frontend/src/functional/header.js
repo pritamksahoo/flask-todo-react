@@ -1,5 +1,6 @@
 import React from 'react';
 import '../css/header.css';
+import icon from '../img/avatar.png';
 
 const Header = (props) => {
 
@@ -18,6 +19,8 @@ const Header = (props) => {
         <div className="profile">
             <div className="profile-dropdown">
                 <a className="dropdown-link">Welcome, {props.username}<b className="downward-arrow">&#8964;</b></a>
+                
+                <a className="alt-dropdown-link"><img className="profile-icon" src={icon} alt="alt" /><b className="downward-arrow"></b></a>
             </div>
             {dropdownList()}
         </div>

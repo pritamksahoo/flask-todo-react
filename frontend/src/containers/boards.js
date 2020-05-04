@@ -17,6 +17,8 @@ class Boards extends Component {
             message: props.message
         }
 
+        this.createBoardBtn = React.createRef()
+
         this.backend_api = 'http://0.0.0.0:8000/'
     }
 
@@ -91,6 +93,8 @@ class Boards extends Component {
         event.preventDefault()
         let newBoard = event.target.newBoard.value
 
+        this.createBoardBtn.current.setAttribute("disabled", "disabled")
+
         if (newBoard !== undefined && newBoard !== '') {
             axios.post(this.backend_api + 'create_new_board/', {
                 username: this.props.username,
@@ -120,9 +124,13 @@ class Boards extends Component {
                         message: text
                     })
                 }
+
+                this.createBoardBtn.current.removeAttribute("disabled")
             })
             .catch((err) => {
-
+                if (this.createBoardBtn.current) {
+                    this.createBoardBtn.current.removeAttribute("disabled")
+                }
             })
         }
 
@@ -150,10 +158,10 @@ class Boards extends Component {
                 <label>Board Name</label>
                 <br></br>
                 
-                <input type="text" name="newBoard" placeholder="Enter new board name" id="newBoard"/>
+                <input type="text" name="newBoard" placeholder="Enter new board name" id="newBoard" required/>
                 <br></br>
 
-                <button type="submit">Create</button>
+                <button type="submit" ref={this.createBoardBtn}>Create</button>
             </form>
         )
     }
@@ -243,6 +251,11 @@ function mapStateToProps(state) {
 
 class BoardItem extends Component {
 
+    constructor (props) {
+        super(props)
+        this.delBtn = React.createRef()
+    }
+
     componentDidMount() {
         // document.addEventListener("click", this.closeMenu);
     }
@@ -264,6 +277,16 @@ class BoardItem extends Component {
 
     // }
 
+    disableBtn = () => {
+        this.delBtn.current.setAttribute("disabled", "disabled")
+    }
+
+    enableBtn = () => {
+        if (this.delBtn.current) {
+            this.delBtn.current.removeAttribute("disabled")
+        }
+    }
+
     render () {
         console.log(this.props.newlyCreated)
         return (
@@ -277,7 +300,7 @@ class BoardItem extends Component {
                 </div>
 
                 <div className="action-span">
-                    <button className="del-button" onClick={this.props.deleteBoard}>Del</button>
+                    <button ref={this.delBtn} className="del-button" onClick={() => {this.disableBtn(); this.props.deleteBoard(); this.enableBtn();}}>Del</button>
                 </div>
             </div>
         )

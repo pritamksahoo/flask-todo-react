@@ -3,12 +3,39 @@ import '../css/todos.css';
 
 class TodoItem extends Component {
 
+    constructor(props) {
+        super(props)
+
+        this.delTodoBtn = React.createRef()
+        this.flagBtn = React.createRef()
+    }
+
     componentDidUpdate () {
         setTimeout(() => {
             if (this.props.newlyDeleted) {
                 this.props.toBeDeleted()
             }
         }, 200)
+    }
+
+    disableDelBtn = () => {
+        this.delTodoBtn.current.setAttribute("disabled", "disabled")
+    }
+
+    enableDelBtn = () => {
+        if (this.flagBtn.current) {
+            this.flagBtn.current.removeAttribute("disabled")
+        }
+    }
+
+    disableFlagBtn = () => {
+        this.flagBtn.current.setAttribute("disabled", "disabled")
+    }
+
+    enableFlagBtn = () => {
+        if (this.flagBtn.current) {
+            this.flagBtn.current.removeAttribute("disabled")
+        }
     }
 
     render() {
@@ -26,11 +53,11 @@ class TodoItem extends Component {
                 </div>
 
                 <div className="action-span">
-                    <button className="del-button" onClick={this.props.deleteTodo}>Del</button>&nbsp;
+                    <button ref={this.delTodoBtn} className="del-button" onClick={() => {this.disableDelBtn(); this.props.deleteTodo(); this.enableDelBtn();}}>Del</button>&nbsp;
                     {
                         !this.props.item[3]
-                        ? <button className="flag-button" onClick={this.props.completeTask}>Complete</button>
-                        : <button className="flag-button" onClick={this.props.inCompleteTask}>Todo</button>
+                        ? <button ref={this.flagBtn} className="flag-button" onClick={() => {this.disableFlagBtn(); this.props.completeTask(); this.enableFlagBtn();}}>Complete</button>
+                        : <button ref={this.flagBtn} className="flag-button" onClick={() => {this.disableFlagBtn(); this.props.inCompleteTask(); this.enableFlagBtn(); }}>Todo</button>
                     }
                 </div>
             </div>
