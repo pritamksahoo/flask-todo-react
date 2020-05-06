@@ -1,17 +1,25 @@
 import time
+from db_sql_ops import *
+from db_mongo_ops import *
 
-def fetch_all_boards(boards, username):
-	temp_boards = boards[username]
+def fetch_all_boards(username):
+	res = find_all_board(username)
 
-	all_boards = [ [k, temp_boards[k]['created_at']] for k in temp_boards ]
-	all_boards = sorted(all_boards, key = lambda x: x[1], reverse=True)
+	if res is not None:
+		temp_boards = res["boardnames"]
 
-	all_boards = list(map(lambda item: [item[0], time.ctime(item[1])], all_boards))
+		all_boards = [ [k, temp_boards[k]] for k in temp_boards ]
+		all_boards = sorted(all_boards, key = lambda x: x[1], reverse=True)
 
-	return all_boards
+		all_boards = list(map(lambda item: [item[0], time.ctime(item[1])], all_boards))
 
-def fetch_all_todos(boards, username, board_name):
-	temp_todos = boards[username][board_name]["todo"]
+		return all_boards
+
+	else:
+		return res
+
+def fetch_all_todos(todos):
+	temp_todos = todos
 
 	all_todos = [ [k, temp_todos[k]['desc'], temp_todos[k]['last_modified'], temp_todos[k]['is_completed']] for k in temp_todos ]
 	all_todos = sorted(all_todos, key = lambda x: x[2], reverse=True)
