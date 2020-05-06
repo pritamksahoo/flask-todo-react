@@ -9,7 +9,7 @@ const Header = (props) => {
             <div className="dropdown-div">
                 <ul className="dropdown">
                     <li className="dropdown-item">Your Profile</li>
-                    <li className="dropdown-item" onClick={props.logout}>Log Out</li>
+                    <li className="dropdown-item" ref={props.refLogOut} onClick={props.logout}>Log Out</li>
                 </ul>
             </div>
         )

@@ -5,12 +5,10 @@ class TodoItem extends Component {
 
     constructor(props) {
         super(props)
-
-        this.delTodoBtn = React.createRef()
-        this.flagBtn = React.createRef()
     }
 
     componentDidUpdate () {
+        // console.log(this.props.item[0])
         setTimeout(() => {
             if (this.props.newlyDeleted) {
                 this.props.toBeDeleted()
@@ -18,29 +16,9 @@ class TodoItem extends Component {
         }, 200)
     }
 
-    disableDelBtn = () => {
-        this.delTodoBtn.current.setAttribute("disabled", "disabled")
-    }
-
-    enableDelBtn = () => {
-        if (this.flagBtn.current) {
-            this.flagBtn.current.removeAttribute("disabled")
-        }
-    }
-
-    disableFlagBtn = () => {
-        this.flagBtn.current.setAttribute("disabled", "disabled")
-    }
-
-    enableFlagBtn = () => {
-        if (this.flagBtn.current) {
-            this.flagBtn.current.removeAttribute("disabled")
-        }
-    }
-
     render() {
         return (
-            <div className={"todo-item " + (this.props.newlyCreated ? "new-todo  " : " " + (this.props.newlyDeleted ? "delete " : ""))}>
+            <div className={"todo-item " + (this.props.newlyCreated ? "new-todo " : " " + (this.props.newlyDeleted ? "delete " : ""))}>
 
                 <div className="left-span">
                     <details>
@@ -53,11 +31,19 @@ class TodoItem extends Component {
                 </div>
 
                 <div className="action-span">
-                    <button ref={this.delTodoBtn} className="del-button" onClick={() => {this.disableDelBtn(); this.props.deleteTodo(); this.enableDelBtn();}}>Del</button>&nbsp;
+                    <button id={this.props.id + "_del"} className="del-button" onClick={() => {this.props.deleteTodo()}}>Del</button>&nbsp;
                     {
                         !this.props.item[3]
-                        ? <button ref={this.flagBtn} className="flag-button" onClick={() => {this.disableFlagBtn(); this.props.completeTask(); this.enableFlagBtn();}}>Complete</button>
-                        : <button ref={this.flagBtn} className="flag-button" onClick={() => {this.disableFlagBtn(); this.props.inCompleteTask(); this.enableFlagBtn(); }}>Todo</button>
+
+                        ? <button id={this.props.id + "_complete"} className="flag-button" 
+                        onClick={() => {this.props.completeTask()}}>
+                            Complete
+                        </button>
+
+                        : <button id={this.props.id + "_incomplete"} className="flag-button" 
+                        onClick={() => {this.props.inCompleteTask() }}>
+                            Todo
+                        </button>
                     }
                 </div>
             </div>

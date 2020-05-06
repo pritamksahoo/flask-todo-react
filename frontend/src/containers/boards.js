@@ -19,7 +19,7 @@ class Boards extends Component {
 
         this.createBoardBtn = React.createRef()
 
-        this.backend_api = 'http://0.0.0.0:8000/'
+        this.backend_api = 'http://192.168.43.183:8000/'
     }
 
     getBoards = (username) => {
@@ -55,7 +55,10 @@ class Boards extends Component {
         }
     }
 
-    deleteBoard = (boardName, pos) => {
+    deleteBoard = (boardName, pos, id) => {
+        let btn = document.getElementById(id)
+        btn.setAttribute("disabled", "disabled")
+
         axios.post(this.backend_api + 'delete_board/', {
             username: this.props.username,
             board: boardName
@@ -83,9 +86,13 @@ class Boards extends Component {
                     message: text
                 })
             }
+            btn.removeAttribute("disabled")
         })
         .catch((err) => {
-
+            if (err) {
+                alert("Can't establish connection to server!")
+            }
+            btn.removeAttribute("disabled")
         })
     }
 
@@ -128,6 +135,10 @@ class Boards extends Component {
                 this.createBoardBtn.current.removeAttribute("disabled")
             })
             .catch((err) => {
+                if (err) {
+                    alert("Can't establish connection to server!")
+                }
+
                 if (this.createBoardBtn.current) {
                     this.createBoardBtn.current.removeAttribute("disabled")
                 }
@@ -182,10 +193,15 @@ class Boards extends Component {
     }
 
     showBoards = () => {
+        if (this.state.boards.length === 0) {
+            return (
+                <p>Board List Empty. Create One!</p>
+            )
+        }
         return (
             this.state.boards.map((item, pos) => {
                 return (
-                    <BoardItem key={`${pos}_${item[1]}`} item={item} pos={pos} 
+                    <BoardItem key={`${pos}_${item[1]}`} id={`${pos}_${item[1]}`} item={item} pos={pos} 
                     
                     newlyCreated={this.state.boardDidCreate && this.state.intendedBoardIndex === pos ? true : false} 
                     
@@ -193,7 +209,7 @@ class Boards extends Component {
 
                     toBeDeleted={() => this.toBeDeleted(pos)}
                     
-                    deleteBoard={() => this.deleteBoard(item[0], pos)} />
+                    deleteBoard={() => this.deleteBoard(item[0], pos, `${pos}_${item[1]}`)} />
                 )
             })
         )
@@ -223,12 +239,20 @@ class Boards extends Component {
                     <div></div>
 
                     <div className="boards">
-                        <h4 className="form-header board-header">ALL BOARDS<hr className="my-hr"></hr></h4>
+                        <h4 className="form-header board-header">ALL BOARDS</h4>
+
+                        <h4 className="form-header alt-board-header">ALL BOARDS</h4>
+
+                        <hr className="my-hr"></hr>
                         
                         {
                             this.state.boards 
                             ? this.showBoards()
-                            : null
+                            : (
+                                this.state.message
+                                ? this.state.message
+                                : "Retrieving Boards . . ."
+                              )
                         }
                     </div>
                     
@@ -277,18 +301,8 @@ class BoardItem extends Component {
 
     // }
 
-    disableBtn = () => {
-        this.delBtn.current.setAttribute("disabled", "disabled")
-    }
-
-    enableBtn = () => {
-        if (this.delBtn.current) {
-            this.delBtn.current.removeAttribute("disabled")
-        }
-    }
-
     render () {
-        console.log(this.props.newlyCreated)
+        // console.log(this.props.newlyCreated)
         return (
             <div className={"board-item " + (this.props.newlyCreated ? "new-board " : " " + (this.props.newlyDeleted ? "delete" : ""))}>
                 <div className="left-span">
@@ -300,7 +314,7 @@ class BoardItem extends Component {
                 </div>
 
                 <div className="action-span">
-                    <button ref={this.delBtn} className="del-button" onClick={() => {this.disableBtn(); this.props.deleteBoard(); this.enableBtn();}}>Del</button>
+                    <button id={this.props.id} className="del-button" onClick={() => { this.props.deleteBoard()}}>Del</button>
                 </div>
             </div>
         )

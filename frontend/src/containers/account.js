@@ -18,7 +18,7 @@ class Account extends Component {
         this.disableLogInBtn = React.createRef()
         this.disableSignUpBtn = React.createRef()
 
-        this.backend_api = 'http://0.0.0.0:8000/'
+        this.backend_api = 'http://192.168.43.183:8000/'
     }
 
     validateFormInput = (...args) => {

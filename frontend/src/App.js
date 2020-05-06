@@ -16,10 +16,12 @@ import './css/app.css';
 
 class App extends Component {
 
-	backend_api = 'http://0.0.0.0:8000/'
+	backend_api = 'http://192.168.43.183:8000/'
 
 	constructor(props) {
 		super(props)
+
+		this.logOutBtn = React.createRef()
 	}
 
 	shouldComponentUpdate() {
@@ -27,6 +29,10 @@ class App extends Component {
 	}
 
 	handleLogOut = (username) => {
+
+		this.logOutBtn.current.setAttribute("disabled", "disabled")
+		this.logOutBtn.current.setAttribute("class", "dropdown-item clicked")
+
         axios.post(this.backend_api + 'logout/', {
             username: username
         })
@@ -39,9 +45,21 @@ class App extends Component {
             } else {
 				alert(text)
             }
+
+            if (this.logOutBtn.current) {
+				this.logOutBtn.current.removeAttribute("disabled")
+        		this.logOutBtn.current.setAttribute("class", "dropdown-item")
+        	}
         })
         .catch((err) => {
-
+        	if (err) {
+        		alert(err)
+        		alert("Logout operation failed! Connection with server couldn't be extablished!")
+        	}
+        	if (this.logOutBtn.current) {
+        		this.logOutBtn.current.removeAttribute("disabled")
+        		this.logOutBtn.current.setAttribute("class", "dropdown-item")
+        	}
         })
 	}
 	
@@ -81,7 +99,7 @@ class App extends Component {
 							</div>
 							{
 								this.props.isAuthenticated
-								? <Header logout={() => this.handleLogOut(this.props.username)} username={this.props.username} />
+								? <Header logout={() => this.handleLogOut(this.props.username)} refLogOut={this.logOutBtn} username={this.props.username} />
 								: <Link className="header-login-link" to={{pathname: '/account/'}}>LogIn</Link>
 							}
 						</header>

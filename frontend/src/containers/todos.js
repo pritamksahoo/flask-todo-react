@@ -21,7 +21,7 @@ class Todos extends Component {
 
         this.createTodoBtn = React.createRef()
 
-        this.backend_api = 'http://0.0.0.0:8000/'
+        this.backend_api = 'http://192.168.43.183:8000/'
     }
 
     getTodos = (username) => {
@@ -50,7 +50,9 @@ class Todos extends Component {
                 }
             })
             .catch((err) => {
-
+                if (err) {
+                    alert("Can't establish connection to server!")
+                }
             })
 
         } else {
@@ -58,7 +60,10 @@ class Todos extends Component {
         }
     }
 
-    completeTask = (taskName) => {
+    completeTask = (taskName, id) => {
+        let btn = document.getElementById(id + "_complete")
+        btn.setAttribute("disabled", "disabled")
+
         axios.post(this.backend_api + 'complete_task/', {
             username: this.props.username,
             board: this.props.match.params.todo,
@@ -66,7 +71,7 @@ class Todos extends Component {
         }, Config)
         .then((result) => {
             let response = result.data
-            console.log(response)
+            // console.log(response)
             let [text, status_code] = response
 
             if (status_code === 200) {
@@ -76,19 +81,28 @@ class Todos extends Component {
                     message: '',
                     todoDidCreate: false,
                     todoDidDelete: false,
+                    intendedTodoIndex: -1,
                 })
             } else {
                 this.setState({
                     message: text
                 })
             }
+
+            btn.removeAttribute("disabled")
         })
         .catch((err) => {
-
+            if (err) {
+                alert("Can't establish connection to server!")
+            }
+            btn.removeAttribute("disabled")
         })
     }
 
-    inCompleteTask = (taskName) => {
+    inCompleteTask = (taskName, id) => {
+        let btn = document.getElementById(id + "_incomplete")
+        btn.setAttribute("disabled", "disabled")
+
         axios.post(this.backend_api + 'incomplete_task/', {
             username: this.props.username,
             board: this.props.match.params.todo,
@@ -106,15 +120,22 @@ class Todos extends Component {
                     message: '',
                     todoDidCreate: false,
                     todoDidDelete: false,
+                    intendedTodoIndex: -1,
                 })
             } else {
                 this.setState({
                     message: text
                 })
             }
+
+            btn.removeAttribute("disabled")
         })
         .catch((err) => {
+            if (err) {
+                alert("Can't establish connection to server!")
+            }
 
+            btn.removeAttribute("disabled")
         })
     }
 
@@ -135,7 +156,7 @@ class Todos extends Component {
             }, Config)
             .then((result) => {
                 let response = result.data
-                console.log(response)
+                // console.log(response)
                 let [text, status_code] = response
 
                 if (status_code === 200) {
@@ -147,7 +168,7 @@ class Todos extends Component {
                         todoDidDelete: false,
                         intendedTodoIndex: 0,
                     })
-                } else if (status_code == 404) {
+                } else if (status_code === 404) {
                     this.setState({
                         message: text
                     })
@@ -160,6 +181,9 @@ class Todos extends Component {
                 this.createTodoBtn.current.removeAttribute("disabled")
             })
             .catch((err) => {
+                if (err) {
+                    alert("Can't establish connection to server!")
+                }
                 if (this.createTodoBtn.current) {
                     this.createTodoBtn.current.removeAttribute("disabled")
                 }
@@ -167,7 +191,10 @@ class Todos extends Component {
         }
     }
 
-    deleteTodo = (taskName, pos, isCompleted) => {
+    deleteTodo = (taskName, pos, id, isCompleted) => {
+        let btn = document.getElementById(id + "_del")
+        btn.setAttribute("disabled", "disabled")
+
         axios.post(this.backend_api + 'delete_todo/', {
             username: this.props.username,
             board: this.props.match.params.todo,
@@ -175,7 +202,7 @@ class Todos extends Component {
         }, Config)
         .then((result) => {
             let response = result.data
-            console.log(response)
+            // console.log(response)
             let [text, status_code] = response
 
             if (status_code === 200) {
@@ -188,7 +215,7 @@ class Todos extends Component {
                     intendedTodoIndex: pos,
                     isCompletedDelete: isCompleted
                 })
-            } else if (status_code == 404) {
+            } else if (status_code === 404) {
                 this.setState({
                     message: text
                 })
@@ -197,9 +224,14 @@ class Todos extends Component {
                     message: text
                 })
             }
+
+            btn.removeAttribute("disabled")
         })
         .catch((err) => {
-
+            if (err) {
+                alert("Can't establish connection to server!")
+            }
+            btn.removeAttribute("disabled")
         })
     }
 
@@ -239,8 +271,9 @@ class Todos extends Component {
     }
 
     toBeDeleted = (itemName) => {
+        // console.log("to be deleted : ", itemName)
         let todos = this.state.todos
-        let pos = 0
+        let pos = -1
         // boards.pop(pos)
         // console.log("boards:before", boards)
 
@@ -251,6 +284,10 @@ class Todos extends Component {
             }
         }
 
+        if (pos < 0) {
+            return false
+        }
+
         todos = [...todos.slice(0, pos), ...todos.slice(pos+1, todos.length)]
 
         // console.log("boards:after", boards)
@@ -258,24 +295,34 @@ class Todos extends Component {
         this.setState({
             todos: todos,
             todoDidDelete: false,
-            todoDidCreate: false
+            todoDidCreate: false,
+            intendedTodoIndex: -1
         })
     }
 
     showList = (all_todos, isCompleted=false) => {
+        // console.log(this.state.todoDidDelete)
+        if (this.state.todos.length === 0) {
+            return (
+                <p>Todo List Empty. Create One!</p>
+            )
+        }
+            
         return (
             all_todos.map((item, pos) => {
                 return (
                     <TodoItem 
-                        key={`pos_${item[2]}`}
+                        key={`pos_${item[0]}`}
+
+                        id={`pos_${item[0]}`}
 
                         item={item} pos={pos}
 
-                        deleteTodo={() => this.deleteTodo(item[0], pos, isCompleted)} 
+                        deleteTodo={() => this.deleteTodo(item[0], pos, `pos_${item[0]}`, isCompleted)} 
                     
-                        completeTask={() => this.completeTask(item[0])}
+                        completeTask={() => this.completeTask(item[0], `pos_${item[0]}`)}
 
-                        inCompleteTask={() => this.inCompleteTask(item[0])}
+                        inCompleteTask={() => this.inCompleteTask(item[0], `pos_${item[0]}`)}
 
                         newlyCreated={this.state.todoDidCreate && this.state.intendedTodoIndex === pos && !isCompleted ? true : false} 
                     
@@ -353,7 +400,11 @@ class Todos extends Component {
                         {
                             this.state.todos  
                             ? this.showTodos()
-                            : null
+                            : (
+                                this.state.message
+                                ? this.state.message
+                                : "Retrieving Todos . . ."
+                              )
                         }
                     </div>
 
@@ -362,7 +413,11 @@ class Todos extends Component {
                         {
                             this.state.todos
                             ? this.showDones()
-                            : null
+                            : (
+                                this.state.message
+                                ? this.state.message
+                                : "Retrieving Todos . . ."
+                              )
                         }
                     </div>
 
@@ -375,17 +430,37 @@ class Todos extends Component {
                             <a className={"header-done " + (this.state.showDone ? "active" : "")} onClick={() => this.showOnlyDone()}>DONE</a>
                         </h4>
 
+                        <div className="todos alt-todos">
                         {
-                            this.state.todos && this.state.showTodo  
-                            ? <div className="todos alt-todos">{this.showTodos()}</div>
+                            this.state.showTodo
+                            ? (
+                                this.state.todos    
+                                ? this.showTodos()
+                                : (
+                                    this.state.message
+                                    ? this.state.message
+                                    : "Retrieving Todos . . ."
+                                  )
+                              )
                             : null
                         }
+                        </div>
 
+                        <div className="dones alt-dones">
                         {
-                            this.state.todos && this.state.showDone 
-                            ? <div className="dones alt-dones">{this.showDones()}</div>
+                            this.state.showDone
+                            ? (
+                                this.state.todos 
+                                ? this.showDones()
+                                : (
+                                    this.state.message
+                                    ? this.state.message
+                                    : "Retrieving Todos . . ."
+                                  )
+                              )
                             : null
                         }
+                        </div>
 
                     </div>
 

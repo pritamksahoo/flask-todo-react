@@ -36,7 +36,9 @@ a.switch-link {
 }
 
 button[type=submit]:disabled,
-.del-button:disabled {
+.del-button:disabled,
+.flag-button:disabled,
+.dropdown-item:disabled {
     background: linear-gradient(-60deg, rgb(22, 23, 13), burlywood, rgb(22, 23, 13), burlywood, rgb(22, 23, 13), burlywood, rgb(22, 23, 13), burlywood, rgb(22, 23, 13), burlywood, rgb(22, 23, 13), burlywood, rgb(22, 13, 13));
     background-size: 150% 100%;
     color: wheat;

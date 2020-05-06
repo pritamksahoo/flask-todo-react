@@ -64,6 +64,13 @@
     border-bottom: 1px solid burlywood;
 }
 
+.dropdown-item:disabled {
+    background: linear-gradient(-60deg, rgb(22, 23, 13), burlywood, rgb(22, 23, 13), burlywood, rgb(22, 23, 13), burlywood, rgb(22, 23, 13), burlywood, rgb(22, 23, 13), burlywood, rgb(22, 23, 13), burlywood, rgb(22, 13, 13));
+    background-size: 150% 100%;
+    color: wheat;
+    animation: busy 3s infinite forwards linear;
+}
+
 .dropdown-item:last-of-type {
     border-bottom: none;
 }
